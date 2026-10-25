@@ -1,4 +1,5 @@
 name: Build Android APK
+# fork zh-cn: workflow enabled for the localized build
 
 # Savage Wind Recomp - Android port. Everything is compiled here in the cloud (never locally):
 # the native dependencies (SDL3, FFmpeg, shaderc), the on-device compiler package (clang + lld)
