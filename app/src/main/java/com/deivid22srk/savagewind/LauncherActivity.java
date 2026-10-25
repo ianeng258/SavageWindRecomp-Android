@@ -98,7 +98,7 @@ public class LauncherActivity extends Activity {
         root.addView(title);
 
         TextView subtitle = new TextView(this);
-        subtitle.setText("Start screen - graphics driver (Vulkan)");
+        subtitle.setText("启动页 - 图形驱动（Vulkan）");
         subtitle.setTextSize(14);
         subtitle.setTextColor(0xFF8B95A1);
         subtitle.setPadding(0, dp(2), 0, dp(14));
@@ -111,10 +111,9 @@ public class LauncherActivity extends Activity {
         root.addView(card, matchWrapWithTop(dp(2)));
 
         TextView info = new TextView(this);
-        info.setText("The game requires Vulkan 1.3. Many system drivers fall short (an Adreno 6xx "
-                + "reports Vulkan 1.1, and the game then stops with \"no Vulkan 1.3 device\"). "
-                + "Import a Turnip driver .zip below and select it here - the game picks it up "
-                + "when it starts.");
+        info.setText("游戏需要 Vulkan 1.3。不少设备的系统驱动达不到（例如 Adreno 6xx 只报告 Vulkan 1.1，"
+                + "游戏会直接以「没有 Vulkan 1.3 设备」终止）。请在下方导入 Turnip 驱动的 .zip，"
+                + "并在这里选中它——游戏启动时会自动使用。");
         info.setTextSize(14);
         info.setTextColor(0xFFC7D0D9);
         card.addView(info);
@@ -131,11 +130,11 @@ public class LauncherActivity extends Activity {
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
         mImportBtn = new Button(this);
-        mImportBtn.setText("Import driver (.zip)...");
+        mImportBtn.setText("导入驱动（.zip）…");
         mImportBtn.setOnClickListener(v -> startImport());
         row.addView(mImportBtn, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         mRemoveBtn = new Button(this);
-        mRemoveBtn.setText("Remove");
+        mRemoveBtn.setText("删除");
         mRemoveBtn.setOnClickListener(v -> confirmRemove());
         LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         rp.setMargins(dp(10), 0, 0, 0);
@@ -143,17 +142,16 @@ public class LauncherActivity extends Activity {
         root.addView(row, matchWrapWithTop(dp(12)));
 
         Button start = new Button(this);
-        start.setText("START GAME");
+        start.setText("开始游戏");
         start.setTextSize(18);
         start.setTypeface(Typeface.DEFAULT_BOLD);
         start.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
         root.addView(start, matchWrapWithTop(dp(18)));
 
         TextView note = new TextView(this);
-        note.setText("Turnip driver .zips are the same packages other Android emulators import "
-                + "(meta.json + the driver .so; see the project README). Changing or removing "
-                + "the driver applies to the next start. Game files (exefs/ + romfs/) are chosen "
-                + "inside the game, as before.");
+        note.setText("Turnip 驱动的 .zip 与其他安卓模拟器导入的是同一种包"
+                + "（meta.json + 驱动 .so，详见项目 README）。更换或删除驱动会在下次启动时生效。"
+                + "游戏文件（exefs/ + romfs/）仍然和以前一样在游戏内选择。");
         note.setTextSize(12);
         note.setTextColor(0xFF77808A);
         note.setPadding(0, dp(14), 0, 0);
@@ -250,7 +248,7 @@ public class LauncherActivity extends Activity {
             o.write(("dir=" + new File(mDriversDir, di.id).getAbsolutePath()
                     + "\nlib=" + di.library + "\n").getBytes("UTF-8"));
         } catch (Exception e) {
-            Toast.makeText(this, "Could not save the selection: " + e, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "无法保存选择：" + e, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -266,7 +264,7 @@ public class LauncherActivity extends Activity {
         mRows.removeAllViews();
         int checkedId = View.NO_ID;
 
-        RadioButton sys = radio("System driver (default)");
+        RadioButton sys = radio("系统驱动（默认）");
         mRows.addView(sys);
         if (mActiveId.isEmpty()) checkedId = sys.getId();
 
@@ -288,10 +286,10 @@ public class LauncherActivity extends Activity {
     }
 
     private void updateStatus() {
-        String what = "System driver (default)";
+        String what = "系统驱动（默认）";
         for (DriverInfo di : mRowDriver.values())
             if (di.id.equals(mActiveId)) what = di.label();
-        mStatus.setText("For the next start: " + what);
+        mStatus.setText("下次启动使用：" + what);
         mStatus.setTextColor(mActiveId.isEmpty() ? 0xFF8B95A1 : 0xFF7DC871);
         mRemoveBtn.setEnabled(!mActiveId.isEmpty());
     }
@@ -307,7 +305,7 @@ public class LauncherActivity extends Activity {
         try {
             startActivityForResult(i, REQ_IMPORT_DRIVER);
         } catch (Exception e) {
-            Toast.makeText(this, "No file picker available on this device", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "此设备没有可用的文件选择器", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -319,14 +317,14 @@ public class LauncherActivity extends Activity {
         final Uri uri = data.getData();
         mImporting = true;
         mImportBtn.setEnabled(false);
-        Toast.makeText(this, "Importing driver...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "正在导入驱动…", Toast.LENGTH_SHORT).show();
         new Thread(() -> {
             String err = importDriver(uri);
             mImporting = false;
             runOnUiThread(() -> {
                 mImportBtn.setEnabled(true);
                 Toast.makeText(this,
-                        err == null ? "Driver imported and selected" : "The driver package was rejected: " + err,
+                        err == null ? "驱动已导入并选中" : "驱动包被拒绝：" + err,
                         err == null ? Toast.LENGTH_SHORT : Toast.LENGTH_LONG).show();
                 reload();
             });
@@ -362,11 +360,11 @@ public class LauncherActivity extends Activity {
             long size = 0;
             try (InputStream in = getContentResolver().openInputStream(uri);
                  OutputStream out = new FileOutputStream(tmp)) {
-                if (in == null) return "could not read the picked file";
+                if (in == null) return "无法读取所选文件";
                 byte[] buf = new byte[1 << 16];
                 for (int n; (n = in.read(buf)) > 0; ) {
                     size += n;
-                    if (size > MAX_ZIP_BYTES) return "the .zip is too large";
+                    if (size > MAX_ZIP_BYTES) return "该 .zip 文件过大";
                     out.write(buf, 0, n);
                 }
             }
@@ -380,7 +378,7 @@ public class LauncherActivity extends Activity {
             DriverInfo di = readMeta(new File(dest, "meta.txt"));
             if (di == null) {  // cannot really happen (the unpacker validated everything)
                 MainActivity.deleteTree(dest);
-                return "the unpacked package is incomplete";
+                return "解压后的驱动包不完整";
             }
             di.id = dest.getName();
             writeActive(di);  // imported -> selected for the next start
@@ -401,15 +399,15 @@ public class LauncherActivity extends Activity {
         if (found == null) return;
         final DriverInfo di = found;  // captured by the dialog's lambda: must be effectively final
         new AlertDialog.Builder(this)
-                .setTitle("Remove driver")
-                .setMessage("Remove \"" + di.label() + "\" from the app? The game goes back to "
-                        + "the system driver the next time it starts.")
-                .setPositiveButton("Remove", (d, w) -> {
+                .setTitle("删除驱动")
+                .setMessage("要从应用中删除 \"" + di.label() + "\" 吗？下次启动游戏会回到"
+                        + "系统驱动。")
+                .setPositiveButton("删除", (d, w) -> {
                     MainActivity.deleteTree(new File(mDriversDir, di.id));
                     if (di.id.equals(activeId())) writeActive(null);
                     reload();
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton("取消", null)
                 .show();
     }
 }
