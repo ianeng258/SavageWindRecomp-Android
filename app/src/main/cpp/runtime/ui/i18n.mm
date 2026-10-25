@@ -160,20 +160,31 @@ static const char *const cyrillic_fonts[] = {"C:/Windows/Fonts/segoeui.ttf", "/u
 static const char *const ja_fonts[] = {"C:/Windows/Fonts/YuGothM.ttc", "C:/Windows/Fonts/meiryo.ttc", "C:/Windows/Fonts/msgothic.ttc",
                                        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
                                        "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
-                                       "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc", "/System/Library/Fonts/Hiragino Sans GB.ttc", nullptr};
+                                       "/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc", "/System/Library/Fonts/Hiragino Sans GB.ttc",
+                                       "/system/fonts/NotoSansCJK-Regular.ttc", "/system/fonts/NotoSansCJKjp-Regular.otf",
+                                       "/system/fonts/DroidSansFallback.ttf", nullptr};
 static const char *const ko_fonts[] = {"C:/Windows/Fonts/malgun.ttf", "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
                                        "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
-                                       "/System/Library/Fonts/AppleSDGothicNeo.ttc", nullptr};
+                                       "/System/Library/Fonts/AppleSDGothicNeo.ttc",
+                                       "/system/fonts/NotoSansCJK-Regular.ttc", "/system/fonts/NotoSansCJKkr-Regular.otf",
+                                       "/system/fonts/DroidSansFallback.ttf", nullptr};
 static const char *const zh_hans_fonts[] = {"C:/Windows/Fonts/msyh.ttc", "C:/Windows/Fonts/simsun.ttc",
                                             "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-                                            "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc", "/System/Library/Fonts/PingFang.ttc", nullptr};
+                                            "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc", "/System/Library/Fonts/PingFang.ttc",
+                                            // Android (__ANDROID__ port): the system CJK faces. Apps can read /system/fonts.
+                                            "/system/fonts/NotoSansCJK-Regular.ttc", "/system/fonts/NotoSansCJKsc-Regular.otf",
+                                            "/system/fonts/NotoSansSC-Regular.otf", "/system/fonts/DroidSansFallback.ttf",
+                                            "/system/fonts/DroidSansFallbackFull.ttf", nullptr};
 static const char *const zh_hant_fonts[] = {"C:/Windows/Fonts/msjh.ttc", "C:/Windows/Fonts/mingliu.ttc",
                                             "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-                                            "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc", "/System/Library/Fonts/PingFang.ttc", nullptr};
+                                            "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc", "/System/Library/Fonts/PingFang.ttc",
+                                            "/system/fonts/NotoSansCJK-Regular.ttc", "/system/fonts/NotoSansCJKtc-Regular.otf",
+                                            "/system/fonts/NotoSansTC-Regular.otf", "/system/fonts/DroidSansFallback.ttf",
+                                            "/system/fonts/DroidSansFallbackFull.ttf", nullptr};
 
 // (Noto Sans CJK .ttc: face 0 is Japanese, 1 Korean, 2 Simplified, 3 Traditional Chinese)
 static int ttc_face(const char *path, const char *lang) {
-    if (!strstr(path, "NotoSansCJK")) return 0;
+    if (!strstr(path, "NotoSansCJK") || !strstr(path, ".ttc")) return 0;
     return !strcmp(lang, "ko") ? 1 : !strcmp(lang, "zh-Hans") ? 2 : !strcmp(lang, "zh-Hant") ? 3 : 0;
 }
 
