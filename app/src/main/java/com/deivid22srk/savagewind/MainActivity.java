@@ -78,7 +78,7 @@ public class MainActivity extends SDLActivity {
         sb.append(readTail(sBootLog, 64));
         File swlog = new File(getExternalFilesDir(null), "savagewind.log");
         if (swlog.isFile()) sb.append("\n---- savagewind.log ----\n").append(readTail(swlog, 64));
-        String text = sb.length() > 0 ? sb.toString() : "(the boot log is empty)";
+        String text = sb.length() > 0 ? sb.toString() : "（启动日志为空）";
         bootLog("loop: " + mBootFails + " failed starts in a row - showing diagnostics instead of restarting");
         runOnUiThread(() -> {
             TextView tv = new TextView(this);
@@ -88,20 +88,20 @@ public class MainActivity extends SDLActivity {
             tv.setTextSize(12f);
             tv.setPadding(48, 32, 48, 32);
             new AlertDialog.Builder(this)
-                    .setTitle("Savage Wind won't start")
-                    .setMessage("The app failed " + mBootFails + " times in a row. Below is what was recorded "
-                            + "before each failure (bootlog.txt).")
+                    .setTitle("Savage Wind 无法启动")
+                    .setMessage("应用连续启动失败 " + mBootFails + " 次。下面是每次失败前记录的日志"
+                            + "（bootlog.txt）。")
                     .setView(tv)
-                    .setPositiveButton("Copy", (d, w) -> {
+                    .setPositiveButton("复制", (d, w) -> {
                         ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                         cm.setPrimaryClip(ClipData.newPlainText("Savage Wind boot log", text));
-                        Toast.makeText(this, "Log copied", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "日志已复制", Toast.LENGTH_SHORT).show();
                     })
-                    .setNeutralButton("Try again", (d, w) -> {
+                    .setNeutralButton("重试", (d, w) -> {
                         clearBootFails();
                         recreate();
                     })
-                    .setNegativeButton("Close", (d, w) -> finish())
+                    .setNegativeButton("关闭", (d, w) -> finish())
                     .setCancelable(false)
                     .show();
         });
@@ -166,6 +166,8 @@ public class MainActivity extends SDLActivity {
             Os.setenv("SAVAGEWIND_LIB_DIR", libdir, true);
             Os.setenv("SAVAGEWIND_CC", libdir + "/libclang.so", true);
             Os.setenv("SAVAGEWIND_FILES_DIR", getFilesDir().getAbsolutePath(), true);
+            // 汉化：菜单语言固定为简体中文（覆盖游戏内 Text Language 的取值）
+            Os.setenv("SAVAGEWIND_MENU_LANG", "zh-Hans", true);
             File bin = new File(getFilesDir(), "bin");
             bin.mkdirs();
             try {
@@ -466,7 +468,7 @@ public class MainActivity extends SDLActivity {
             path = realPath(data.getData());
             if (path == null) {
                 Toast.makeText(this,
-                    "Only folders on the phone's internal storage are supported (move the game files there).",
+                    "只支持手机内部存储中的文件夹（请把游戏文件移到内部存储）。",
                     Toast.LENGTH_LONG).show();
             }
         }
